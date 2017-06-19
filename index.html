@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Sortable - Default functionality</title>
+  <link rel="stylesheet" href="jquery-ui.min.css">
+  <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
+  <style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 30%; }
+  /*#sortable li span { position: absolute; margin-left: -1.3em; }*/
+  #sortable li{
+
+    border: 1px solid;padding: 10px 0px 10px 10px;
+    margin-bottom: 4px;
+  }
+  .input_update{
+    width: 100%;
+    height: 100%;
+    outline: none;
+    font-size: 18px;
+    /*text-align: left;*/
+    border: 0;
+    font-weight: 0;
+    width: 98%;
+  }
+  
+  .edit,.close{
+    float: right;
+    margin-right: 10px;
+    cursor:pointer;
+  }
+
+  </style>
+  <script src="jquery.js"></script>
+  <script src="jquery-ui.min.js"></script>
+  <script>
+  $( function() {
+    $( "#sortable" ).sortable({
+      update: function( event, ui ) {
+        // console.log($(this).find("li"));
+        var str = "";
+        $(this).find("li").each(function(index,val){
+          // console.log($(val).html());
+          str+= $(val).text()
+        });
+           alert(str);
+      },
+      cursor: "move"
+    });
+  } );
+  </script>
+</head>
+<body>
+ <div>
+   <button id="add">增加item</button>
+ </div>
+<ul id="sortable">
+  <li data-get ="Item 1">Item 1 <span class="close"><a href="javascript:void(0)">cancel</a></span><span class="edit"><a href="javascript:void(0)">edit</a></span></li>
+  <li data-get ="Item 2">Item 2 <span class="close"><a href="javascript:void(0)">cancel</a></span><span class="edit"><a href="javascript:void(0)">edit</a></span></li>
+  <li data-get ="Item 3">Item 3 <span class="close"><a href="javascript:void(0)">cancel</a></span><span class="edit"><a href="javascript:void(0)">edit</a></span></li>
+  <li data-get ="Item 4">Item 4 <span class="close"><a href="javascript:void(0)">cancel</a></span><span class="edit"><a href="javascript:void(0)">edit</a></span></li>
+  <li data-get ="Item 5">Item 5 <span class="close"><a href="javascript:void(0)">cancel</a></span><span class="edit"><a href="javascript:void(0)">edit</a></span></li>
+</ul>
+<script>
+    $("#add").click(add);
+    $("#sortable li .edit").click(update);
+    $(".close").click(remove);
+    
+//双击修改
+    function update(){
+        var val = $(this).parent().data("get");
+        var that = $(this).parent();//li
+        // $(this).children("span").hide();
+        that.html("<input type='text' class='input_update'/>"); 
+        that.children("input").val(val).focus();
+       	$(this).off("click");
+
+        that.children("input").blur(function(){
+            var ospan = document.createElement("span");
+            $(ospan).html('<a href="javascript:void(0)">cancel</a>');
+            $(ospan).addClass("close");
+            $(this).parent().html($(this).val());
+            that.append($(ospan));
+            $(ospan).click(remove);
+            var ospan_edit = document.createElement("span");
+            $(ospan_edit).html('<a href="javascript:void(0)">edit</a>');
+            $(ospan_edit).addClass("edit");
+            that.append($(ospan_edit));
+            that.children(".edit").click(update);
+        });
+
+        that.siblings("li").click(function(){
+        	that.children("input").trigger("blur");
+        });
+    }
+
+//增加一条item
+    function add(){
+        var oli = document.createElement("li");
+        var ospan = document.createElement("span");
+        $(ospan).html('<a href="javascript:void(0)">cancel</a>');
+        $(ospan).addClass("close");
+
+        var ospan_edit = document.createElement("span");
+        $(ospan_edit).html('<a href="javascript:void(0)">edit</a>');
+        $(ospan_edit).addClass("edit");
+
+        var index = $("#sortable li").length+1;
+        $(oli).html("item "+index);
+        $(oli).attr("data-get",$(oli).html());
+        $(oli).addClass("ui-sortable-handle");
+        $(oli).append($(ospan));
+        $(oli).append($(ospan_edit));
+        $( "#sortable" ).append($(oli));
+        $(ospan_edit).click(update);
+        $(ospan).click(remove);
+ }
+//remove 
+    function remove(){
+        console.log(1);
+        $(this).parent()[0].outerHTML = "";
+    }
+</script>
+</body>
+</html>
